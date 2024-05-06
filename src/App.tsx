@@ -1,5 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FC } from "react";
+
+interface Task {
+  task: string;
+  isDone: boolean;
+}
 
 interface TaskListDisplayProps {
   taskList: null | string[];
@@ -7,9 +12,16 @@ interface TaskListDisplayProps {
 
 function App() {
   const [text, setText] = useState<string>("");
-  const [tasks, setTasks] = useState<null | string[]>(null);
+  const [tasks, setTasks] = useState<object[]>([]);
 
-  console.log(localStorage);
+  useEffect(() => {
+    if (localStorage) {
+      const loadedTasks = JSON.parse(localStorage.getItem("user1"));
+      setTasks(loadedTasks);
+    }
+  }, []);
+
+  console.log(tasks);
 
   const textOnChange = (event: any) => {
     setText(event.target.value);
@@ -18,19 +30,21 @@ function App() {
   const addTaskButtonAction = (event: any) => {
     event.preventDefault();
 
-    if (tasks === null) {
-      setTasks([text]);
-      const tasksToStore = JSON.stringify(tasks);
-      localStorage.setItem("user1", tasksToStore);
-      setText("");
-      return;
-    }
+    const newTask: Task = {
+      task: text,
+      isDone: false,
+    };
 
-    setTasks(tasks?.concat(text));
-    const tasksToStore = JSON.stringify(tasks);
-    localStorage.setItem("user1", tasksToStore);
+    addToLocalStorage(newTask);
+
+    setTasks(tasks.concat(newTask));
     setText("");
   };
+
+  function addToLocalStorage(task: Task): void {
+    const tasksToStore = JSON.stringify(tasks.concat(task));
+    localStorage.setItem("user1", tasksToStore);
+  }
 
   return (
     <>
@@ -51,7 +65,7 @@ const TaskListDisplay: FC<TaskListDisplayProps> = ({ taskList }) => {
       <>
         <ul>
           {taskList.map((task) => (
-            <li key={task}>{task}</li>
+            <li key={task.task}>{task.task}</li>
           ))}
         </ul>
       </>
