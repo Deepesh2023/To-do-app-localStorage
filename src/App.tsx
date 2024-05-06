@@ -1,13 +1,9 @@
 import { useState, useEffect } from "react";
-import { FC } from "react";
+import TaskListDisplay from "./components/TaskListDisplay.tsx";
 
 interface Task {
   task: string;
   isDone: boolean;
-}
-
-interface TaskListDisplayProps {
-  taskList: null | string[];
 }
 
 function App() {
@@ -58,20 +54,5 @@ function App() {
     </>
   );
 }
-
-const TaskListDisplay: FC<TaskListDisplayProps> = ({ taskList }) => {
-  if (taskList) {
-    return (
-      <>
-        <ul>
-          {taskList.map((task) => (
-            <li key={task.task}>{task.task}</li>
-          ))}
-        </ul>
-      </>
-    );
-  }
-  return null;
-};
 
 export default App;
